@@ -1,100 +1,160 @@
 # Driver Drowsiness Detection System
 
-A computer vision and deep learning project that explores driver drowsiness detection through eye-state classification. The system uses facial landmark detection to extract eye regions and a Convolutional Neural Network (CNN) to classify images of eyes as **open or closed**.
-
-This project was developed to explore the application of image processing, computer vision, and deep learning to a road-safety problem.
-
 ## Project Overview
 
-Driver fatigue and drowsiness can affect attention and reaction time while driving. This project investigates one approach to detecting a potential indicator of drowsiness by analysing eye images.
+The Driver Drowsiness Detection System is a computer vision and deep learning project developed to explore the detection of potential driver drowsiness through eye-state classification.
 
-The implementation focuses on preprocessing eye images and training a CNN to distinguish between open and closed eyes.
+The project uses a Convolutional Neural Network (CNN) to classify eye images as open or closed. It combines image preprocessing, facial feature detection, and deep learning with a live webcam-based detection script to demonstrate a potential approach to identifying prolonged eye closure.
 
-## Key Features
+The project explores the application of artificial intelligence and computer vision techniques to a road-safety problem.
 
-- **Eye Region Extraction:** Uses facial landmarks to identify and crop the left and right eye regions from images.
-- **Image Preprocessing:** Resizes images to 80 × 80 pixels and normalizes pixel values.
-- **Binary Classification:** Labels eye images as open or closed.
-- **CNN Architecture:** Uses convolutional and pooling layers to learn visual features.
-- **Model Training and Evaluation:** Trains the model using training and validation data and evaluates it on the held-out test split.
-- **Model Saving:** Saves the trained model as `best_model.h5`.
+## Objectives
+
+- Develop a CNN model for classifying eye images as open or closed.
+- Apply image preprocessing techniques to prepare eye images for model training.
+- Explore facial and eye detection using OpenCV Haar Cascade classifiers.
+- Integrate the trained model into a webcam-based detection pipeline.
+- Implement a frame-based scoring mechanism and optional audio alert for potential prolonged eye closure.
 
 ## Technologies Used
 
-- **Python** — Core programming language.
-- **TensorFlow and Keras** — CNN development and model training.
-- **OpenCV** — Image loading, resizing, and preprocessing.
-- **face_recognition** — Facial landmark detection for extracting eye regions.
-- **NumPy** — Numerical operations and array manipulation.
-- **scikit-learn** — Splitting the dataset into training and test sets.
-- **Pillow (PIL)** — Image handling and processing.
-- **Jupyter Notebook** — Interactive development and experimentation.
+- **Python:** Core programming language.
+- **TensorFlow and Keras:** CNN development, training, and inference.
+- **OpenCV:** Image processing, webcam access, and Haar Cascade-based face and eye detection.
+- **NumPy:** Numerical operations and image array manipulation.
+- **scikit-learn:** Dataset splitting and model development utilities.
+- **Pillow (PIL):** Image handling and processing.
+- **face_recognition:** Facial landmark detection used in the training notebook's eye-region extraction code.
+- **Pygame:** Audio playback for the live-detection alert.
+- **Jupyter Notebook:** Interactive development and experimentation.
 
-## Model Architecture
+## Project Structure
 
-The project uses a Sequential CNN built with TensorFlow/Keras.
+```text
+Driver-Drowsiness-Detection/
+|
+|-- drivers_drowsiness_detection_system.ipynb
+|-- live_detection.py
+|-- best_model.h5
+|-- alarm.wav
+|-- dataset.zip
+|-- dataset_new/
+|   |-- train/
+|       |-- Open/
+|       |-- Closed/
+|-- README.md
+```
 
-The architecture includes:
+The structure above describes the expected project files and directories. The trained model, alarm audio file, and extracted dataset must be present where required by the corresponding code. Optional files may be absent if they have not been generated or supplied.
 
-1. Multiple convolutional layers with ReLU activation to learn image features.
-2. Max-pooling layers to reduce spatial dimensions.
-3. A Flatten layer to convert extracted features into a one-dimensional representation.
-4. Fully connected Dense layers with 256, 128, and 64 units.
-5. Dropout layers with a rate of 0.3 to help reduce overfitting.
-6. A sigmoid output layer for binary classification.
+## System Workflow
+
+The project consists of two main components.
+
+### 1. CNN Model Training
+
+The Jupyter Notebook contains the model-development pipeline:
+
+1. Load eye images from the dataset.
+2. Resize images to 80 × 80 pixels.
+3. Normalize pixel values.
+4. Prepare the image arrays and corresponding class labels.
+5. Split the data into training and evaluation subsets.
+6. Build a CNN using convolutional, max-pooling, fully connected, and dropout layers.
+7. Train the model using the Adam optimizer and binary cross-entropy loss.
+8. Evaluate the model and visualize training and validation metrics.
+9. Save the trained model as `best_model.h5`.
+
+### 2. Live Drowsiness Detection
+
+The `live_detection.py` script integrates the trained CNN with a webcam-based detection pipeline.
+
+The process involves:
+
+1. Initialize the webcam and load the trained CNN.
+2. Detect the driver's face using an OpenCV Haar Cascade classifier.
+3. Detect eye regions within the face.
+4. Resize and normalize detected eye images to match the CNN's expected input format.
+5. Predict whether the detected eyes are open or closed.
+6. Update a frame-based score when closed-eye predictions occur.
+7. Display the detection status and trigger an optional audio alert when the configured threshold is reached.
+
+The live-detection implementation uses a threshold-based heuristic to identify repeated closed-eye predictions. This is an experimental approach rather than a clinically validated measure of driver drowsiness.
+
+## CNN Model Architecture
+
+The model is implemented using TensorFlow/Keras and follows a Sequential CNN architecture.
+
+The principal components include:
+
+- Convolutional layers with ReLU activation for extracting visual features.
+- Max-pooling layers for reducing spatial dimensions.
+- A Flatten layer for converting feature maps into a one-dimensional representation.
+- Fully connected Dense layers containing 256, 128, and 64 units.
+- Dropout layers with a rate of 0.3 to help reduce overfitting.
+- A sigmoid output layer for binary classification.
 
 ### Training Configuration
 
-| Parameter | Configuration |
+| Parameter | Value |
 |---|---|
-| Input image size | 80 × 80 pixels |
-| Input channels | 3 (RGB/BGR image array) |
-| Output | Binary classification |
+| Input image dimensions | 80 × 80 pixels |
+| Input channels | 3 |
+| Classification task | Binary classification |
 | Loss function | Binary cross-entropy |
 | Optimizer | Adam |
 | Evaluation metric | Precision-Recall AUC |
 | Batch size | 800 |
 | Training epochs | 50 |
+| Saved model filename | `best_model.h5` |
 
-## Repository Contents
+## Requirements
 
-| File or directory | Description |
-|---|---|
-| `drivers_drowsiness_detection_system.ipynb` | Main notebook containing eye extraction, image preprocessing, CNN training, evaluation, and model saving. |
-| `dataset.zip` | Compressed dataset archive expected by the notebook. |
-| `dataset_new/train/Open/` | Directory containing open-eye training images. |
-| `dataset_new/train/Closed/` | Directory containing closed-eye training images. |
-| `best_model.h5` | Trained model file generated when the notebook reaches the model-saving step. |
+The project uses the following Python libraries:
 
-*The dataset directories and model file are generated or required during execution; they may not be present in the repository initially.*
+- TensorFlow
+- OpenCV
+- NumPy
+- scikit-learn
+- Pillow
+- face_recognition
+- Pygame
+- Jupyter Notebook
+
+The `face_recognition` package may require additional system dependencies, including a compatible installation of `dlib`. Dependency versions may need adjustment depending on the Python environment.
 
 ## Evaluation
 
-The notebook evaluates the trained model on a held-out test split and uses **Precision-Recall AUC** as its evaluation metric.
+The training notebook includes model evaluation and plots of training and validation metrics. The live-detection script provides visual status feedback and a threshold-based closed-eye score.
 
-Numerical evaluation results have not been documented in this README. Actual performance should be reported after running the notebook and recording the resulting metrics.
+Numerical performance results should be reported only after confirming the corresponding evaluation output. Results documented in the original project report may not necessarily reflect the performance of the current repository version.
 
-## Scope and Limitations
+## Limitations
 
-- The current implementation focuses on classifying eye images as open or closed.
-- The notebook does not implement a complete real-time monitoring pipeline with webcam input or an audible alert.
-- Closed-eye classification alone does not establish that a driver is drowsy.
-- Model performance depends on dataset quality, image diversity, and the training configuration.
-- The system is an experimental learning project and should not be used as a standalone driver-safety system.
+- The CNN classifies eye images as open or closed; this classification alone does not establish that a driver is drowsy.
+- Haar Cascade detection may be affected by lighting, glasses, head position, and image quality.
+- The live-detection score is based on video frames rather than elapsed eye-closure time.
+- Webcam detection may produce false positives or false negatives.
+- The model's performance depends on the quality and diversity of its training data.
+- The project has not been established as a validated or production-ready driver-safety system.
 
-## Potential Improvements
+## Potential Future Improvements
 
-- Integrate real-time webcam-based eye detection.
-- Track eye closure over time to explore indicators such as prolonged eye closure.
-- Add an alert mechanism for potential drowsiness.
-- Evaluate the model using additional metrics, including precision, recall, F1-score, and a confusion matrix.
-- Improve reproducibility by documenting dataset sources, dependency versions, and experimental results.
+- Introduce separate training, validation, and test datasets.
+- Evaluate performance using precision, recall, F1-score, and a confusion matrix.
+- Improve eye-region detection under different lighting conditions and head positions.
+- Use elapsed eye-closure duration and temporal analysis to improve detection.
+- Document dependency versions and provide a reproducible environment configuration.
+- Evaluate the complete pipeline on representative video recordings.
 
-## Project Summary
+## Conclusion
 
-This project explores how computer vision and deep learning can be applied to an introductory driver-drowsiness detection problem. It provided practical experience with image preprocessing, facial landmarks, CNN architecture design, binary classification, and model evaluation.
+This project explores the application of computer vision and deep learning to driver drowsiness detection. It combines CNN-based eye-state classification with facial feature detection and a webcam-based inference pipeline.
 
-**Project type:** Computer Vision and Deep Learning  
-**Primary task:** Open-eye versus closed-eye classification  
+The implementation provides practical exposure to image preprocessing, CNN architecture design, binary classification, model evaluation, and integration of a trained model into a computer vision application.
+
+**Project category:** Computer Vision and Deep Learning  
+**Primary task:** Eye-state classification  
 **Framework:** TensorFlow/Keras  
+**Programming language:** Python  
 **Development environment:** Jupyter Notebook
